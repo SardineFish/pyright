@@ -4,16 +4,17 @@
  * Implements pyright language server.
  */
 
-import {
-    CancellationToken,
-    CodeAction,
-    CodeActionKind,
-    CodeActionParams,
-    Command,
-    Connection,
-    ExecuteCommandParams,
-    WorkDoneProgressServerReporter,
-} from 'vscode-languageserver';
+import
+    {
+        CancellationToken,
+        CodeAction,
+        CodeActionKind,
+        CodeActionParams,
+        Command,
+        Connection,
+        ExecuteCommandParams,
+        WorkDoneProgressServerReporter,
+    } from 'vscode-languageserver';
 
 import { AnalysisResults } from './analyzer/analysis';
 import { CacheManager } from './analyzer/cacheManager';

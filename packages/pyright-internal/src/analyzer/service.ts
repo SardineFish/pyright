@@ -14,11 +14,12 @@ import { AbstractCancellationTokenSource, CancellationToken } from 'vscode-langu
 
 import { BackgroundAnalysisBase, RefreshOptions } from '../backgroundAnalysisBase';
 import { CancellationProvider, DefaultCancellationProvider } from '../common/cancellationUtils';
-import {
-    CommandLineConfigOptions,
-    CommandLineLanguageServerOptions,
-    CommandLineOptions,
-} from '../common/commandLineOptions';
+import
+    {
+        CommandLineConfigOptions,
+        CommandLineLanguageServerOptions,
+        CommandLineOptions,
+    } from '../common/commandLineOptions';
 import { ConfigOptions, matchFileSpecs } from '../common/configOptions';
 import { ConsoleInterface, LogLevel, StandardConsole, log } from '../common/console';
 import { isString } from '../common/core';
@@ -36,35 +37,38 @@ import { ServiceProvider } from '../common/serviceProvider';
 import { Range } from '../common/textRange';
 import { timingStats } from '../common/timing';
 import { Uri } from '../common/uri/uri';
-import {
-    FileSpec,
-    deduplicateFolders,
-    getFileSpec,
-    getFileSystemEntries,
-    hasPythonExtension,
-    isDirectory,
-    isFile,
-    makeDirectories,
-    tryRealpath,
-    tryStat,
-} from '../common/uri/uriUtils';
+import
+    {
+        FileSpec,
+        deduplicateFolders,
+        getFileSpec,
+        getFileSystemEntries,
+        hasPythonExtension,
+        isDirectory,
+        isFile,
+        makeDirectories,
+        tryRealpath,
+        tryStat,
+    } from '../common/uri/uriUtils';
 import { Localizer } from '../localization/localize';
 import { AnalysisCompleteCallback } from './analysis';
-import {
-    BackgroundAnalysisProgram,
-    BackgroundAnalysisProgramFactory,
-    InvalidatedReason,
-} from './backgroundAnalysisProgram';
+import
+    {
+        BackgroundAnalysisProgram,
+        BackgroundAnalysisProgramFactory,
+        InvalidatedReason,
+    } from './backgroundAnalysisProgram';
 import { ImportResolver, ImportResolverFactory, createImportedModuleDescriptor } from './importResolver';
 import { MaxAnalysisTime, Program } from './program';
 import { findPythonSearchPaths } from './pythonPathUtils';
-import {
-    configFileName,
-    findConfigFile,
-    findConfigFileHereOrUp,
-    findPyprojectTomlFile,
-    findPyprojectTomlFileHereOrUp,
-} from './serviceUtils';
+import
+    {
+        configFileName,
+        findConfigFile,
+        findConfigFileHereOrUp,
+        findPyprojectTomlFile,
+        findPyprojectTomlFileHereOrUp,
+    } from './serviceUtils';
 import { IPythonMode } from './sourceFile';
 
 // How long since the last user activity should we wait until running

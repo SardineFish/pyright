@@ -518,7 +518,9 @@ export class ImportResolver {
         let newCacheValue: Dirent[];
         try {
             newCacheValue = this.fileSystem.readdirEntriesSync(uri);
-        } catch {
+        } catch (err)
+        {
+            console.error(err);
             newCacheValue = [];
         }
 

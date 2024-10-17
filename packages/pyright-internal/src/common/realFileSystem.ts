@@ -4,7 +4,7 @@
  * Helper functions that require real filesystem access.
  */
 
-import { FakeFS, NativePath, PortablePath, PosixFS, ppath, VirtualFS, ZipFS, ZipOpenFS } from '@yarnpkg/fslib';
+import { FakeFS, NativePath, NodeFS, PortablePath, PosixFS, ppath, VirtualFS, ZipFS, ZipOpenFS } from '@yarnpkg/fslib';
 import { getLibzipSync } from '@yarnpkg/libzip';
 import * as fs from 'fs';
 import * as tmp from 'tmp';
@@ -26,6 +26,7 @@ import { combinePaths, getRootLength } from './pathUtils';
 import { FileUri, FileUriSchema } from './uri/fileUri';
 import { Uri } from './uri/uri';
 import { getRootUri } from './uri/uriUtils';
+import { ZipOpenFSOptions } from '@yarnpkg/fslib/lib/ZipOpenFS';
 
 // Automatically remove files created by tmp at process exit.
 tmp.setGracefulCleanup();
@@ -122,13 +123,24 @@ function hasZipMagic(fs: FakeFS<PortablePath>, p: PortablePath): boolean {
 //@ts-expect-error
 class EggZipOpenFS extends ZipOpenFS {
     // Copied from the ZipOpenFS implementation.
-    private override readonly baseFs!: FakeFS<PortablePath>;
-    private override readonly filter!: RegExp | null;
-    private override isZip!: Set<PortablePath>;
-    private override notZip!: Set<PortablePath>;
+    // private override readonly baseFs!: FakeFS<PortablePath>;
+    // private override readonly filter!: RegExp | null;
+    // private override isZip!: Set<PortablePath>;
+    // private override notZip!: Set<PortablePath>;
 
-    override findZip(p: PortablePath) {
-        if (this.filter && !this.filter.test(p)) return null;
+    constructor({ libzip, baseFs, filter, maxOpenFiles, readOnlyArchives, useCache, maxAge, fileExtensions }: ZipOpenFSOptions)
+    {
+        super({ libzip, baseFs, filter, maxOpenFiles, readOnlyArchives, useCache, maxAge, fileExtensions });
+    }
+
+    override findZip(p: PortablePath)
+    {
+        const filter: RegExp | null = (this as any).filter;
+        const isZip: Set<PortablePath> = (this as any).isZip;
+        const notZip: Set<PortablePath> = (this as any).isZip;
+        const baseFs: FakeFS<PortablePath> = (this as any).baseFs;
+
+        if (filter && !filter.test(p)) return null;
 
         let filePath = `` as PortablePath;
 
@@ -138,17 +150,17 @@ class EggZipOpenFS extends ZipOpenFS {
 
             filePath = this.pathUtils.join(filePath, archivePart);
 
-            if (this.isZip.has(filePath) === false) {
-                if (this.notZip.has(filePath)) continue;
+            if (isZip.has(filePath) === false) {
+                if (notZip.has(filePath)) continue;
 
                 try {
-                    if (!this.baseFs.lstatSync(filePath).isFile()) {
-                        this.notZip.add(filePath);
+                    if (!baseFs.lstatSync(filePath).isFile()) {
+                        notZip.add(filePath);
                         continue;
                     }
 
-                    if (!hasZipMagic(this.baseFs, filePath)) {
-                        this.notZip.add(filePath);
+                    if (!hasZipMagic(baseFs, filePath)) {
+                        notZip.add(filePath);
                         continue;
                     }
 
@@ -161,14 +173,14 @@ class EggZipOpenFS extends ZipOpenFS {
                         // eslint-disable-next-line @typescript-eslint/no-empty-function
                         this.getZipSync(filePath, () => {});
                     } catch {
-                        this.notZip.add(filePath);
+                        notZip.add(filePath);
                         continue;
                     }
                 } catch {
                     return null;
                 }
 
-                this.isZip.add(filePath);
+                isZip.add(filePath);
             }
 
             return {
@@ -197,6 +209,7 @@ class YarnFS extends PosixFS {
             useCache: true,
             maxOpenFiles: 80,
             readOnlyArchives: true,
+            baseFs: new NodeFS(),
         });
 
         super(
@@ -234,7 +247,7 @@ export class RealFileSystem implements FileSystem {
         try {
             // Catch zip open errors. existsSync is assumed to never throw by callers.
             return yarnFS.existsSync(path);
-        } catch {
+        } catch (err) {
             return false;
         }
     }
