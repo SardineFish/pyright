@@ -8,7 +8,7 @@
 
 import { some } from '../collectionUtils';
 import { getRootLength, getShortenedFileName } from '../pathUtils';
-import { Uri } from './uri';
+import { Uri } from "./uriInterface";
 import { cacheProperty } from './memoization';
 
 export type JsonObjType = any;

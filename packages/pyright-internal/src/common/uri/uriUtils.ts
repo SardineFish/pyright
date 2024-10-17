@@ -8,16 +8,17 @@
 
 import type { Dirent } from 'fs';
 
-import { FileSystem, ReadOnlyFileSystem, Stats } from '../fileSystem';
-import {
-    getRegexEscapedSeparator,
-    isDirectoryWildcardPatternPresent,
-    stripTrailingDirectorySeparator,
-} from '../pathUtils';
-import { Uri } from './uri';
-import { ServiceKeys } from '../serviceKeys';
 import { CaseSensitivityDetector } from '../caseSensitivityDetector';
+import { FileSystem, ReadOnlyFileSystem, Stats } from '../fileSystem';
+import
+    {
+        getRegexEscapedSeparator,
+        isDirectoryWildcardPatternPresent,
+        stripTrailingDirectorySeparator,
+    } from '../pathUtils';
+import { ServiceKeys } from '../serviceKeys';
 import { ServiceProvider } from '../serviceProvider';
+import { Uri } from './uri';
 
 export interface FileSpec {
     // File specs can contain wildcard characters (**, *, ?). This

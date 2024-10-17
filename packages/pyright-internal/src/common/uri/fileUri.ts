@@ -23,7 +23,8 @@ import {
 } from '../pathUtils';
 import { BaseUri, JsonObjType } from './baseUri';
 import { cacheMethodWithNoArgs, cacheProperty, cacheStaticFunc } from './memoization';
-import { SerializedType, Uri, UriKinds } from './uri';
+import { SerializedType, UriKinds } from './uri';
+import { Uri } from "./uriInterface";
 
 type FileUriSerializedType = [0, string, string, string, string | undefined, 1 | 0];
 

@@ -7,7 +7,7 @@
  */
 
 import { BaseUri } from './baseUri';
-import { Uri } from './uri';
+import { Uri } from "./uriInterface";
 
 export class ConstantUri extends BaseUri {
     constructor(name: string) {

@@ -14,7 +14,7 @@
 import { getRootLength, hasTrailingDirectorySeparator, resolvePaths } from '../pathUtils';
 import { BaseUri, JsonObjType } from './baseUri';
 import { cacheMethodWithNoArgs, cacheProperty, cacheStaticFunc } from './memoization';
-import { Uri } from './uri';
+import { Uri } from './uriInterface';
 import { URI } from 'vscode-uri';
 
 export class WebUri extends BaseUri {
