@@ -1,4 +1,4 @@
-/*
+    /*
  * realFileSystem.ts
  *
  * Helper functions that require real filesystem access.
@@ -15,18 +15,19 @@ import { ConsoleInterface, NullConsole } from './console';
 import { randomBytesHex } from './crypto';
 import { FileSystem, MkDirOptions, TempFile, TmpfileOptions } from './fileSystem';
 import {
-    FileWatcher,
-    FileWatcherEventHandler,
-    FileWatcherEventType,
-    FileWatcherHandler,
-    FileWatcherProvider,
-    nullFileWatcherProvider,
-} from './fileWatcher';
+        FileWatcher,
+        FileWatcherEventHandler,
+        FileWatcherEventType,
+        FileWatcherHandler,
+        FileWatcherProvider,
+        nullFileWatcherProvider,
+    } from './fileWatcher';
 import { combinePaths, getRootLength } from './pathUtils';
 import { FileUri, FileUriSchema } from './uri/fileUri';
 import { Uri } from './uri/uri';
 import { getRootUri } from './uri/uriUtils';
 import { ZipOpenFSOptions } from '@yarnpkg/fslib/lib/ZipOpenFS';
+import NodePath from "path";
 
 // Automatically remove files created by tmp at process exit.
 tmp.setGracefulCleanup();
@@ -273,13 +274,15 @@ export class RealFileSystem implements FileSystem {
 
     readdirEntriesSync(uri: Uri): fs.Dirent[] {
         const path = uri.getFilePath();
-        return yarnFS.readdirSync(path, { withFileTypes: true }).map((entry): fs.Dirent => {
+        return yarnFS.readdirSync(path).map((entry): fs.Dirent =>
+        {
+            const stat = yarnFS.statSync(NodePath.join(path, entry));
             // Treat zip/egg files as directories.
             // See: https://github.com/yarnpkg/berry/blob/master/packages/vscode-zipfs/sources/ZipFSProvider.ts
-            if (hasZipExtension(entry.name)) {
-                if (entry.isFile() && yarnFS.isZip(path)) {
+            if (hasZipExtension(entry)) {
+                if (stat.isFile() && yarnFS.isZip(path)) {
                     return {
-                        name: entry.name,
+                        name: NodePath.basename(entry),
                         parentPath: path,
                         path: path,
                         isFile: () => false,
@@ -292,7 +295,18 @@ export class RealFileSystem implements FileSystem {
                     };
                 }
             }
-            return entry;
+            return {
+                        name: NodePath.basename(entry),
+                        parentPath: path,
+                        path: path,
+                        isFile: () => stat.isFile(),
+                        isDirectory: () => stat.isDirectory(),
+                        isBlockDevice: () => stat.isBlockDevice(),
+                        isCharacterDevice: () => stat.isCharacterDevice(),
+                        isSymbolicLink: () => stat.isSymbolicLink(),
+                        isFIFO: () => stat.isFIFO(),
+                        isSocket: () => stat.isSocket(),
+                    };
         });
     }
 
